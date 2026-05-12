@@ -74,11 +74,11 @@ const finishes: Finish[] = [
 ];
 
 const applications = [
-  ['Retail', 'Espacios que capturan atención.'],
-  ['Hospitalidad', 'Atmósferas que permanecen.'],
-  ['Espacios de trabajo', 'Identidad construida desde la superficie.'],
-  ['Mobiliario', 'Objetos convertidos en declaración.'],
-  ['Exhibición', 'Presencia temporal. Impacto duradero.'],
+  ['Retail', 'Espacios que capturan atención.', '/images/app-retail.jpg'],
+  ['Hospitalidad', 'Atmósferas que permanecen.', '/images/app-hospitality.jpg'],
+  ['Espacios de trabajo', 'Identidad construida desde la superficie.', '/images/app-workspace.jpg'],
+  ['Mobiliario', 'Objetos convertidos en declaración.', '/images/app-furniture.jpg'],
+  ['Exhibición', 'Presencia temporal. Impacto duradero.', '/images/app-exhibition.jpg'],
 ];
 
 const performance: Array<[string, ComponentType<{ className?: string }>]> = [
@@ -162,7 +162,7 @@ function HeroVisual() {
   return (
     <motion.div style={{ scale, y }} className="absolute inset-0">
       <img
-        src="/images/echo-panel-real.jpg"
+        src="/images/hero-macro.jpg"
         alt=""
         className="h-full w-full object-cover opacity-62 [object-position:62%_52%]"
       />
@@ -207,29 +207,30 @@ function SensoryTriptych() {
   return (
     <div className="grid min-h-[76vh] gap-3 md:grid-cols-[1.2fr_0.8fr_0.7fr]">
       <motion.div {...reveal()} className="relative overflow-hidden rounded-[4px]">
-        <img src="/images/echo-panel-real.jpg" alt="" className="h-full min-h-[520px] w-full object-cover [object-position:72%_48%]" />
+        <img src="/images/material-banner.jpg" alt="" className="h-full min-h-[520px] w-full object-cover [object-position:50%_50%]" />
         <div className="absolute inset-0 bg-[linear-gradient(180deg,transparent,rgba(0,0,0,0.55))]" />
       </motion.div>
       <motion.div {...reveal(0.12)} className="relative overflow-hidden rounded-[4px] bg-[#111]">
-        <MaterialTexture finish={finishes[3]} className="h-full min-h-[520px]" />
+        <img src="/images/sensory-water.jpg" alt="" className="h-full min-h-[520px] w-full object-cover [object-position:50%_50%]" />
         <div className="absolute inset-x-0 top-1/3 h-px bg-white/50 shadow-[0_0_42px_rgba(255,255,255,0.6)]" />
       </motion.div>
       <motion.div {...reveal(0.22)} className="relative overflow-hidden rounded-[4px] bg-bone">
-        <MaterialTexture finish={finishes[2]} className="h-full min-h-[520px]" />
+        <img src="/images/sensory-cut.jpg" alt="" className="h-full min-h-[520px] w-full object-cover [object-position:50%_50%]" />
         <div className="absolute left-1/2 top-0 h-full w-px bg-black/25" />
       </motion.div>
     </div>
   );
 }
 
-function ApplicationCard({ title, text, index }: { title: string; text: string; index: number }) {
+function ApplicationCard({ title, text, image, index }: { title: string; text: string; image: string; index: number }) {
   return (
     <motion.article
       {...reveal(index * 0.06)}
       className="group relative flex min-h-[68vh] overflow-hidden rounded-[6px] border border-white/8 bg-[#0d0d0b]"
     >
-      <div className="absolute inset-0 architectural-scene" style={{ '--scene-index': index } as CSSProperties} />
-      <div className="absolute inset-0 bg-[linear-gradient(180deg,transparent_0%,rgba(0,0,0,0.18)_42%,rgba(0,0,0,0.88)_100%)]" />
+      <img src={image} alt="" className="absolute inset-0 h-full w-full object-cover transition duration-[1400ms] group-hover:scale-105" />
+      <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.08)_0%,rgba(0,0,0,0.18)_38%,rgba(0,0,0,0.9)_100%)]" />
+      <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(0,0,0,0.35),transparent_42%,rgba(0,0,0,0.2))]" />
       <div className="relative mt-auto p-6 md:p-8">
         <p className="mb-5 text-[0.62rem] uppercase tracking-[0.32em] text-white/34">0{index + 1}</p>
         <h3 className="font-serif text-5xl leading-none text-bone md:text-6xl">{title}</h3>
@@ -426,8 +427,8 @@ export default function Home() {
             </div>
           </motion.div>
           <div className="grid gap-3 lg:grid-cols-5">
-            {applications.map(([title, text], index) => (
-              <ApplicationCard key={title} title={title} text={text} index={index} />
+            {applications.map(([title, text, image], index) => (
+              <ApplicationCard key={title} title={title} text={text} image={image} index={index} />
             ))}
           </div>
         </div>
@@ -484,7 +485,7 @@ export default function Home() {
       </EditorialSection>
 
       <EditorialSection className="grid items-center bg-black">
-        <img src="/images/echo-panel-real.jpg" alt="" className="absolute inset-0 h-full w-full object-cover opacity-32 [object-position:52%_48%]" />
+        <img src="/images/origin-human.jpg" alt="" className="absolute inset-0 h-full w-full object-cover opacity-36 [object-position:55%_50%]" />
         <div className="absolute inset-0 bg-[linear-gradient(90deg,#000_0%,rgba(0,0,0,0.78)_46%,rgba(0,0,0,0.28)_100%),linear-gradient(180deg,#000_0%,transparent_34%,#000_100%)]" />
         <motion.div {...reveal()} className="relative mx-auto w-full max-w-7xl">
           <SectionKicker>09 / Origen</SectionKicker>
@@ -499,6 +500,8 @@ export default function Home() {
       </EditorialSection>
 
       <EditorialSection id="contacto" className="bg-[#030303]">
+        <img src="/images/sample-kit.jpg" alt="" className="absolute right-0 top-0 hidden h-full w-[42vw] object-cover opacity-20 md:block" />
+        <div className="absolute right-0 top-0 hidden h-full w-[50vw] bg-[linear-gradient(90deg,#030303_0%,rgba(3,3,3,0.72)_35%,rgba(3,3,3,0.2)_100%)] md:block" />
         <div className="mx-auto grid min-h-[82vh] w-full max-w-7xl gap-16 md:grid-cols-[1fr_0.85fr] md:items-center">
           <motion.div {...reveal()}>
             <SectionKicker>10 / Conversión</SectionKicker>

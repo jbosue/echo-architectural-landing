@@ -3,126 +3,265 @@
 import type { ComponentType, CSSProperties, FormEvent, ReactNode } from 'react';
 import { useMemo, useState } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
-import {
-  ArrowRight,
-  CircleDashed,
-  Hammer,
-  Layers3,
-  Move3D,
-  Recycle,
-  Shield,
-  Waves,
-} from 'lucide-react';
+import { ArrowRight, CircleDashed, Hammer, Layers3, Move3D, Recycle, Shield, Waves } from 'lucide-react';
 
 type Finish = {
   name: string;
-  descriptor: string;
+  tone: string;
   gradient: string;
   accent: string;
   flecks: string;
+  grain: string;
 };
+
+type MotionTransition = {
+  duration: number;
+  ease: readonly [number, number, number, number];
+  delay?: number;
+};
+
+const ease = [0.22, 1, 0.36, 1] as const;
 
 const finishes: Finish[] = [
   {
     name: 'Nevada Gris',
-    descriptor: 'gris mineral con movimiento grafito sutil',
-    gradient: 'from-[#d6d3cb] via-[#9d9a93] to-[#555452]',
-    accent: '#d6d3cb',
-    flecks: 'rgba(255,255,255,0.42)',
+    tone: 'mineral frio',
+    gradient: 'from-[#d8d5cc] via-[#9d9990] to-[#4b4a47]',
+    accent: '#d8d5cc',
+    flecks: 'rgba(255,255,255,0.46)',
+    grain: 'rgba(35,34,32,0.28)',
   },
   {
     name: 'Fiesta',
-    descriptor: 'fragmentos cromáticos suspendidos en negro arquitectónico',
-    gradient: 'from-[#1d1b1b] via-[#38312e] to-[#d36d50]',
-    accent: '#d36d50',
-    flecks: 'rgba(248,183,91,0.55)',
+    tone: 'negro cromatico',
+    gradient: 'from-[#040404] via-[#17120f] to-[#d06a48]',
+    accent: '#d06a48',
+    flecks: 'rgba(239,111,67,0.66)',
+    grain: 'rgba(255,255,255,0.12)',
   },
   {
-    name: 'Velo Obsidiana',
-    descriptor: 'negro suave con presencia satinada y monolítica',
-    gradient: 'from-[#050505] via-[#191919] to-[#3a3936]',
-    accent: '#222222',
-    flecks: 'rgba(255,255,255,0.18)',
+    name: 'Nebula White',
+    tone: 'blanco orbital',
+    gradient: 'from-[#f7f4ea] via-[#dad4c7] to-[#8f897e]',
+    accent: '#f7f4ea',
+    flecks: 'rgba(72,67,61,0.32)',
+    grain: 'rgba(255,255,255,0.5)',
   },
   {
-    name: 'Caliza',
-    descriptor: 'agregado claro y cálido para galerías y hospitalidad',
-    gradient: 'from-[#f2eee4] via-[#d9d0c1] to-[#9e9484]',
-    accent: '#e7dfd0',
-    flecks: 'rgba(77,68,58,0.22)',
+    name: 'Carbon Static',
+    tone: 'grafito profundo',
+    gradient: 'from-[#050505] via-[#151515] to-[#46423b]',
+    accent: '#1f1f1d',
+    flecks: 'rgba(255,255,255,0.2)',
+    grain: 'rgba(0,0,0,0.42)',
+  },
+  {
+    name: 'Volcanic Ash',
+    tone: 'ceniza calida',
+    gradient: 'from-[#26221f] via-[#766d61] to-[#c9bca8]',
+    accent: '#a39380',
+    flecks: 'rgba(244,219,174,0.35)',
+    grain: 'rgba(18,15,12,0.38)',
+  },
+  {
+    name: 'Solar Dust',
+    tone: 'polvo dorado',
+    gradient: 'from-[#221a10] via-[#ad8750] to-[#ead49a]',
+    accent: '#d4a45d',
+    flecks: 'rgba(255,224,142,0.58)',
+    grain: 'rgba(82,49,17,0.3)',
   },
 ];
 
 const applications = [
-  ['Comercio', 'superficies de marca que convierten el movimiento en memoria'],
-  ['Hospitalidad', 'calma táctil para barras, suites, lobbies y umbrales'],
-  ['Oficinas', 'sistemas livianos para divisiones, escritorios e identidad espacial'],
-  ['Mobiliario', 'formado, ruteado y detallado como una nueva especie de oficio'],
-  ['Exhibición', 'entornos de montaje rápido con presencia material duradera'],
+  ['Retail', 'Espacios que capturan atención.'],
+  ['Hospitalidad', 'Atmósferas que permanecen.'],
+  ['Espacios de trabajo', 'Identidad construida desde la superficie.'],
+  ['Mobiliario', 'Objetos convertidos en declaración.'],
+  ['Exhibición', 'Presencia temporal. Impacto duradero.'],
 ];
 
-const performance: Array<[string, string, ComponentType<{ className?: string }>]> = [
-  ['Liviano', 'menos masa, más libertad', Layers3],
-  ['Durable', 'hecho para el contacto diario', Shield],
-  ['Termoformable', 'el calor se convierte en geometría', Move3D],
-  ['Resistente a la humedad', 'estable en interiores exigentes', Waves],
-  ['Mecanizable', 'corta, rutea y perfila con precisión', Hammer],
-  ['Composición circular', 'polímeros recuperados, ingeniería hacia adelante', Recycle],
+const performance: Array<[string, ComponentType<{ className?: string }>]> = [
+  ['Ligero', Layers3],
+  ['Duradero', Shield],
+  ['Termoformable', Move3D],
+  ['Resistente a humedad', Waves],
+  ['Precisión mecanizable', Hammer],
+  ['Composición circular', Recycle],
 ];
 
-const smoothEase = [0.22, 1, 0.36, 1] as const;
-
-const fadeUp = {
-  initial: { opacity: 0, y: 42 },
-  whileInView: { opacity: 1, y: 0 },
+const reveal = (delay = 0) => ({
+  initial: { opacity: 0, y: 56, filter: 'blur(10px)' },
+  whileInView: { opacity: 1, y: 0, filter: 'blur(0px)' },
   viewport: { once: true, margin: '-18%' },
-  transition: { duration: 0.9, ease: smoothEase },
-};
+  transition: { duration: 1.15, ease, delay } as MotionTransition,
+});
 
-function SectionLabel({ children, dark = false }: { children: ReactNode; dark?: boolean }) {
+function SectionKicker({ children, dark = true }: { children: ReactNode; dark?: boolean }) {
   return (
-    <p className={`mb-8 text-xs uppercase tracking-label ${dark ? 'text-white/45' : 'text-black/45'}`}>
+    <p className={`mb-7 text-[0.62rem] uppercase tracking-[0.36em] ${dark ? 'text-white/36' : 'text-black/36'}`}>
       {children}
     </p>
   );
 }
 
-function MaterialPlane({ finish, className = '' }: { finish: Finish; className?: string }) {
+function EditorialSection({
+  id,
+  children,
+  className = '',
+}: {
+  id?: string;
+  children: ReactNode;
+  className?: string;
+}) {
   return (
-    <motion.div
-      layout
-      className={`material-plane relative overflow-hidden rounded-[1.7rem] border border-white/15 bg-gradient-to-br ${finish.gradient} shadow-material ${className}`}
-      style={{ '--fleck-color': finish.flecks } as CSSProperties}
-      transition={{ duration: 0.8, ease: smoothEase }}
+    <section id={id} className={`relative min-h-screen overflow-hidden px-5 py-24 md:px-10 ${className}`}>
+      {children}
+    </section>
+  );
+}
+
+function MaterialTexture({ finish, className = '' }: { finish: Finish; className?: string }) {
+  return (
+    <div
+      className={`material-render relative overflow-hidden bg-gradient-to-br ${finish.gradient} ${className}`}
+      style={
+        {
+          '--fleck-color': finish.flecks,
+          '--grain-color': finish.grain,
+        } as CSSProperties
+      }
     >
-      <div className="absolute inset-0 material-noise opacity-70" />
-      <div className="absolute inset-x-0 top-0 h-1/2 bg-gradient-to-b from-white/30 to-transparent mix-blend-soft-light" />
-      <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-black/35 to-transparent" />
+      <div className="absolute inset-0 material-depth" />
+      <div className="absolute inset-0 material-sheen" />
+    </div>
+  );
+}
+
+function FloatingPanel({ finish, compact = false }: { finish: Finish; compact?: boolean }) {
+  return (
+    <div className="panel-stage">
+      <motion.div
+        className={`panel-3d ${compact ? 'h-[52vh] max-h-[620px] w-[54vw] max-w-[390px]' : 'h-[68vh] max-h-[760px] w-[58vw] max-w-[520px]'}`}
+        animate={{ rotateY: [-11, 8, -11], rotateX: [5, -2, 5], y: [0, -18, 0] }}
+        transition={{ duration: 13, repeat: Infinity, ease: 'easeInOut' }}
+      >
+        <MaterialTexture finish={finish} className="absolute inset-0 rounded-[6px]" />
+        <div className="panel-edge panel-edge-right" />
+        <div className="panel-edge panel-edge-bottom" />
+      </motion.div>
+    </div>
+  );
+}
+
+function HeroVisual() {
+  const { scrollYProgress } = useScroll();
+  const scale = useTransform(scrollYProgress, [0, 0.18], [1.07, 1.18]);
+  const y = useTransform(scrollYProgress, [0, 0.18], [0, -80]);
+
+  return (
+    <motion.div style={{ scale, y }} className="absolute inset-0">
+      <img
+        src="/images/echo-panel-real.jpg"
+        alt=""
+        className="h-full w-full object-cover opacity-62 [object-position:62%_52%]"
+      />
+      <div className="absolute inset-0 bg-[linear-gradient(90deg,#000_0%,rgba(0,0,0,0.74)_26%,rgba(0,0,0,0.18)_58%,#000_100%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_72%_54%,rgba(255,255,255,0.18),transparent_18%),linear-gradient(180deg,#000_0%,transparent_36%,#000_100%)]" />
     </motion.div>
   );
 }
 
-function HeroMacro() {
-  const { scrollYProgress } = useScroll();
-  const y = useTransform(scrollYProgress, [0, 0.16], [0, -80]);
-  const scale = useTransform(scrollYProgress, [0, 0.16], [1, 1.08]);
+function TraditionalMorph() {
+  const pieces = ['Piedra.', 'Madera.', 'Laminados.'];
 
   return (
-    <motion.div style={{ y, scale }} className="absolute inset-0 overflow-hidden">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_52%_43%,rgba(255,255,255,0.18),transparent_19%),radial-gradient(circle_at_48%_52%,rgba(164,156,141,0.34),transparent_31%),linear-gradient(145deg,#000_0%,#0d0d0c_42%,#25231f_100%)]" />
-      <div className="absolute left-1/2 top-1/2 h-[66vmin] w-[118vmin] -translate-x-1/2 -translate-y-1/2 rotate-[-13deg] rounded-[3rem] border border-white/10 bg-gradient-to-br from-stone-100/20 via-stone-500/10 to-black shadow-[0_70px_160px_rgba(0,0,0,0.7)] material-noise" />
+    <div className="relative h-[58vh] min-h-[420px]">
+      {pieces.map((piece, index) => (
+        <motion.div
+          key={piece}
+          initial={{ opacity: 0, x: -60, rotate: index * 2 - 4 }}
+          whileInView={{ opacity: 1, x: 0, rotate: index * -3 }}
+          viewport={{ once: true, margin: '-20%' }}
+          transition={{ duration: 1.1, ease, delay: index * 0.18 }}
+          className="absolute left-0 top-1/2 h-20 w-[62vw] max-w-[720px] origin-left border border-white/12 bg-white/[0.035] backdrop-blur-md md:h-28"
+          style={{ transform: `translateY(${(index - 1) * 96}px)` }}
+        >
+          <span className="absolute left-6 top-1/2 -translate-y-1/2 font-serif text-4xl text-white/44 md:text-7xl">{piece}</span>
+        </motion.div>
+      ))}
       <motion.div
-        initial={{ clipPath: 'inset(0 100% 0 0)' }}
-        animate={{ clipPath: 'inset(0 0% 0 0)' }}
-        transition={{ duration: 1.8, ease: smoothEase, delay: 0.25 }}
-        className="absolute inset-0 bg-[linear-gradient(100deg,transparent_0%,rgba(255,255,255,0.26)_46%,transparent_58%)] opacity-60"
-      />
-    </motion.div>
+        initial={{ opacity: 0, scale: 0.88, rotate: -8 }}
+        whileInView={{ opacity: 1, scale: 1, rotate: -2 }}
+        viewport={{ once: true, margin: '-20%' }}
+        transition={{ duration: 1.4, ease, delay: 0.74 }}
+        className="absolute bottom-0 right-0 h-[42vh] w-[44vw] min-w-[280px] max-w-[540px]"
+      >
+        <MaterialTexture finish={finishes[1]} className="h-full rounded-[6px] shadow-[0_60px_180px_rgba(0,0,0,0.7)]" />
+      </motion.div>
+    </div>
+  );
+}
+
+function SensoryTriptych() {
+  return (
+    <div className="grid min-h-[76vh] gap-3 md:grid-cols-[1.2fr_0.8fr_0.7fr]">
+      <motion.div {...reveal()} className="relative overflow-hidden rounded-[4px]">
+        <img src="/images/echo-panel-real.jpg" alt="" className="h-full min-h-[520px] w-full object-cover [object-position:72%_48%]" />
+        <div className="absolute inset-0 bg-[linear-gradient(180deg,transparent,rgba(0,0,0,0.55))]" />
+      </motion.div>
+      <motion.div {...reveal(0.12)} className="relative overflow-hidden rounded-[4px] bg-[#111]">
+        <MaterialTexture finish={finishes[3]} className="h-full min-h-[520px]" />
+        <div className="absolute inset-x-0 top-1/3 h-px bg-white/50 shadow-[0_0_42px_rgba(255,255,255,0.6)]" />
+      </motion.div>
+      <motion.div {...reveal(0.22)} className="relative overflow-hidden rounded-[4px] bg-bone">
+        <MaterialTexture finish={finishes[2]} className="h-full min-h-[520px]" />
+        <div className="absolute left-1/2 top-0 h-full w-px bg-black/25" />
+      </motion.div>
+    </div>
+  );
+}
+
+function ApplicationCard({ title, text, index }: { title: string; text: string; index: number }) {
+  return (
+    <motion.article
+      {...reveal(index * 0.06)}
+      className="group relative flex min-h-[68vh] overflow-hidden rounded-[6px] border border-white/8 bg-[#0d0d0b]"
+    >
+      <div className="absolute inset-0 architectural-scene" style={{ '--scene-index': index } as CSSProperties} />
+      <div className="absolute inset-0 bg-[linear-gradient(180deg,transparent_0%,rgba(0,0,0,0.18)_42%,rgba(0,0,0,0.88)_100%)]" />
+      <div className="relative mt-auto p-6 md:p-8">
+        <p className="mb-5 text-[0.62rem] uppercase tracking-[0.32em] text-white/34">0{index + 1}</p>
+        <h3 className="font-serif text-5xl leading-none text-bone md:text-6xl">{title}</h3>
+        <p className="mt-6 max-w-[18rem] text-base leading-7 text-white/62">{text}</p>
+      </div>
+    </motion.article>
+  );
+}
+
+function TechnicalExplode() {
+  return (
+    <div className="relative h-[62vh] min-h-[460px]">
+      {[0, 1, 2].map((layer) => (
+        <motion.div
+          key={layer}
+          initial={{ opacity: 0, x: 60, y: 40 }}
+          whileInView={{ opacity: 1, x: layer * 34, y: layer * -34 }}
+          viewport={{ once: true, margin: '-20%' }}
+          transition={{ duration: 1.2, ease, delay: layer * 0.12 }}
+          className="absolute left-[12%] top-[22%] h-[42vh] w-[62vw] max-w-[620px] rounded-[6px] border border-white/12 shadow-[0_50px_140px_rgba(0,0,0,0.48)]"
+        >
+          <MaterialTexture finish={finishes[layer + 1]} className="h-full rounded-[6px]" />
+        </motion.div>
+      ))}
+      <div className="absolute bottom-8 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent" />
+    </div>
   );
 }
 
 function ContactForm() {
   const [submitted, setSubmitted] = useState(false);
+  const fields = ['Nombre', 'Estudio o empresa', 'Correo electrónico', 'Tipo de proyecto', 'Etapa del proyecto'];
 
   function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -130,37 +269,33 @@ function ContactForm() {
   }
 
   return (
-    <div className="relative rounded-[2rem] border border-white/12 bg-white/[0.035] p-5 shadow-material backdrop-blur-xl md:p-8">
+    <div className="relative border-t border-white/18 pt-8">
       <motion.div
         initial={false}
-        animate={submitted ? { opacity: 1, y: 0, pointerEvents: 'auto' } : { opacity: 0, y: 20, pointerEvents: 'none' }}
-        className="absolute inset-0 z-10 grid place-items-center rounded-[2rem] bg-[#050505]/95 p-8 text-center backdrop-blur-xl"
+        animate={submitted ? { opacity: 1, y: 0, pointerEvents: 'auto' } : { opacity: 0, y: 24, pointerEvents: 'none' }}
+        className="absolute inset-0 z-10 flex flex-col justify-center bg-[#030303]/96 backdrop-blur-xl"
       >
-        <CircleDashed className="mb-8 h-10 w-10 animate-spin text-white/50 [animation-duration:8s]" />
-        <p className="font-serif text-4xl text-white md:text-6xl">Experiencia de muestra iniciada.</p>
-        <p className="mt-6 max-w-md text-sm leading-7 text-white/55">
-          ECHO responderá con guía de acabados, notas de fabricación y la próxima ventana disponible para el kit de materiales.
-        </p>
+        <CircleDashed className="mb-9 h-9 w-9 animate-spin text-white/45 [animation-duration:9s]" />
+        <p className="max-w-lg font-serif text-5xl leading-[0.95] text-bone md:text-7xl">Tu exploración comienza aquí.</p>
       </motion.div>
-      <form onSubmit={onSubmit} className="grid gap-4">
-        {['Nombre', 'Estudio / Empresa', 'Correo', 'Tipo de proyecto', 'Etapa del proyecto'].map((field) => (
-          <label key={field} className="group block">
-            <span className="mb-2 block text-[0.65rem] uppercase tracking-label text-white/38">{field}</span>
+      <form onSubmit={onSubmit} className="grid gap-5">
+        {fields.map((field) => (
+          <label key={field} className="block">
+            <span className="mb-2 block text-[0.62rem] uppercase tracking-[0.32em] text-white/34">{field}</span>
             <input
               required
-              type={field === 'Correo' ? 'email' : 'text'}
-              className="w-full border-b border-white/16 bg-transparent px-0 py-4 text-base text-white outline-none transition placeholder:text-white/20 focus:border-white/70"
-              placeholder={field === 'Etapa del proyecto' ? 'Concepto / desarrollo / obra / compra' : field}
+              type={field === 'Correo electrónico' ? 'email' : 'text'}
+              className="w-full border-b border-white/18 bg-transparent py-4 text-lg text-white outline-none transition focus:border-white"
             />
           </label>
         ))}
-        <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-          <button className="group inline-flex items-center justify-center rounded-full bg-white px-7 py-4 text-sm font-medium text-black transition hover:bg-bone">
-            Solicitar kit de muestras
-            <ArrowRight className="ml-3 h-4 w-4 transition group-hover:translate-x-1" />
+        <div className="mt-10 flex flex-col gap-3 sm:flex-row">
+          <button className="inline-flex items-center justify-center rounded-[4px] bg-bone px-7 py-4 text-sm font-medium uppercase tracking-[0.18em] text-black transition hover:bg-white">
+            Solicitar muestra
+            <ArrowRight className="ml-3 h-4 w-4" />
           </button>
-          <button type="button" className="rounded-full border border-white/18 px-7 py-4 text-sm text-white/80 transition hover:border-white/45 hover:text-white">
-            Agendar asesoría de diseño
+          <button type="button" className="rounded-[4px] border border-white/18 px-7 py-4 text-sm uppercase tracking-[0.18em] text-white/74 transition hover:border-white/55 hover:text-white">
+            Agendar asesoría
           </button>
         </div>
       </form>
@@ -170,205 +305,217 @@ function ContactForm() {
 
 export default function Home() {
   const [activeFinish, setActiveFinish] = useState(finishes[0]);
-  const currentYear = useMemo(() => new Date().getFullYear(), []);
+  const year = useMemo(() => new Date().getFullYear(), []);
 
   return (
-    <main className="min-h-screen overflow-hidden bg-graphite text-white selection:bg-white selection:text-black">
-      <nav className="fixed left-0 right-0 top-0 z-50 flex items-center justify-between px-5 py-5 mix-blend-difference md:px-10">
+    <main className="bg-[#030303] text-white selection:bg-bone selection:text-black">
+      <nav className="fixed left-0 right-0 top-0 z-50 flex items-center justify-between px-5 py-6 mix-blend-difference md:px-10">
         <a href="#hero" className="text-sm font-semibold tracking-[0.5em] text-white">ECHO</a>
-        <div className="hidden items-center gap-8 text-[0.65rem] uppercase tracking-label text-white/70 md:flex">
-          <a href="#matter">Materia</a>
-          <a href="#worlds">Usos</a>
-          <a href="#library">Biblioteca</a>
-          <a href="#sample">Muestra</a>
+        <div className="hidden gap-8 text-[0.62rem] uppercase tracking-[0.32em] text-white/70 md:flex">
+          <a href="#revelacion">Materia</a>
+          <a href="#universos">Universos</a>
+          <a href="#biblioteca">Biblioteca</a>
+          <a href="#contacto">Contacto</a>
         </div>
       </nav>
 
-      <section id="hero" className="relative grid min-h-screen place-items-center overflow-hidden px-5 py-24 text-center">
-        <HeroMacro />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,rgba(0,0,0,0.35)_42%,#000_100%)]" />
-        <motion.div {...fadeUp} className="relative z-10 max-w-6xl">
-          <p className="mb-8 text-xs uppercase tracking-label text-white/45">Colombia / superficie arquitectónica de ingeniería</p>
-          <h1 className="text-[17vw] font-semibold uppercase leading-[0.76] tracking-cinematic md:text-[9.8vw]">
-            No es madera.<br />No es piedra.<br />No es lo de antes.
+      <EditorialSection id="hero" className="grid place-items-center bg-black text-center">
+        <HeroVisual />
+        <motion.div {...reveal(0.12)} className="relative z-10 mx-auto max-w-[92rem]">
+          <h1 className="editorial-headline text-[20vw] leading-[0.78] md:text-[12vw]">
+            EL SIGUIENTE<br />LENGUAJE<br />MATERIAL
           </h1>
-          <p className="mx-auto mt-9 max-w-xl text-lg text-white/68 md:text-2xl">Una nueva categoría de superficie arquitectónica.</p>
-          <a href="#disruption" className="mt-12 inline-flex items-center rounded-full border border-white/22 px-7 py-4 text-sm text-white/88 transition hover:border-white hover:bg-white hover:text-black">
+          <p className="mx-auto mt-10 max-w-2xl text-lg leading-8 text-white/68 md:text-2xl">
+            Una nueva categoría de superficies arquitectónicas diseñada para espacios que rechazan la repetición.
+          </p>
+          <a href="#disrupcion" className="mt-12 inline-flex items-center rounded-[4px] border border-white/22 px-7 py-4 text-sm uppercase tracking-[0.2em] text-white transition hover:border-white hover:bg-white hover:text-black">
             Explorar el material <ArrowRight className="ml-3 h-4 w-4" />
           </a>
         </motion.div>
-        <div className="absolute bottom-8 left-1/2 h-16 w-px -translate-x-1/2 overflow-hidden bg-white/12">
-          <motion.div animate={{ y: ['-100%', '120%'] }} transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }} className="h-8 w-px bg-white" />
+        <div className="absolute bottom-7 left-1/2 z-10 -translate-x-1/2 text-[0.62rem] uppercase tracking-[0.34em] text-white/42">
+          Desliza para descubrir
         </div>
-      </section>
+      </EditorialSection>
 
-      <section id="disruption" className="relative grid min-h-screen items-center bg-bone px-5 py-24 text-black md:px-10">
-        <div className="mx-auto grid max-w-7xl gap-16 md:grid-cols-[1.15fr_0.85fr] md:items-end">
-          <motion.div {...fadeUp}>
-            <SectionLabel>01 / ruptura de categoría</SectionLabel>
-            <h2 className="max-w-5xl text-[15vw] font-semibold leading-[0.82] tracking-cinematic md:text-[8.3vw]">
-              La arquitectura sigue repitiéndose.
+      <EditorialSection id="disrupcion" className="grid items-center bg-[#050505]">
+        <div className="mx-auto grid w-full max-w-7xl gap-16 md:grid-cols-[0.95fr_1.05fr] md:items-center">
+          <div>
+            <SectionKicker>02 / Disrupción</SectionKicker>
+            <motion.h2 {...reveal()} className="max-w-4xl font-serif text-[12vw] leading-[0.92] text-bone md:text-[5.8vw]">
+              La arquitectura lleva demasiado tiempo hablando con los mismos materiales
+            </motion.h2>
+            <motion.div {...reveal(0.18)} className="mt-12 max-w-md text-2xl leading-10 text-white/58">
+              <p>Piedra.</p>
+              <p>Madera.</p>
+              <p>Laminados.</p>
+              <p className="mt-8">El diseño ha evolucionado. Los materiales no al mismo ritmo.</p>
+              <p className="mt-10 font-serif text-5xl text-white">Hasta ahora.</p>
+            </motion.div>
+          </div>
+          <TraditionalMorph />
+        </div>
+      </EditorialSection>
+
+      <EditorialSection id="revelacion" className="grid items-center bg-bone text-black">
+        <div className="mx-auto grid w-full max-w-7xl gap-12 md:grid-cols-[0.85fr_1.15fr] md:items-center">
+          <motion.div {...reveal()}>
+            <SectionKicker dark={false}>03 / Revelación</SectionKicker>
+            <h2 className="max-w-4xl text-[14vw] font-semibold leading-[0.82] md:text-[7vw]">
+              Una nueva categoría de materia arquitectónica
             </h2>
-          </motion.div>
-          <motion.div {...fadeUp} transition={{ ...fadeUp.transition, delay: 0.15 }} className="pb-3">
-            <p className="max-w-lg text-2xl leading-tight text-black/62 md:text-4xl">
-              Los materiales no han evolucionado al ritmo de la ambición del diseño.
+            <p className="mt-10 max-w-xl text-xl leading-8 text-black/62">
+              Paneles de polímero recuperado diseñados con precisión para arquitectura expresiva a gran escala.
             </p>
-            <div className="mt-12 h-1 w-full overflow-hidden bg-black/10">
-              <motion.div whileInView={{ x: ['-100%', '0%'] }} viewport={{ once: true }} transition={{ duration: 1.4, ease: smoothEase }} className="h-full bg-black" />
+            <div className="mt-14 grid max-w-xl grid-cols-2 gap-px bg-black/14 text-[0.68rem] uppercase tracking-[0.24em] text-black/62">
+              {['1.25 × 2.50 m', '10–25 mm', 'Precisión mecanizable', 'Libertad termoformable'].map((spec) => (
+                <div key={spec} className="bg-bone p-5">{spec}</div>
+              ))}
             </div>
           </motion.div>
+          <FloatingPanel finish={finishes[0]} />
         </div>
-      </section>
+      </EditorialSection>
 
-      <section id="matter" className="relative min-h-screen overflow-hidden bg-[#090909] px-5 py-28 md:px-10">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_30%,rgba(255,255,255,0.09),transparent_28%)]" />
-        <div className="relative mx-auto grid max-w-7xl gap-14 md:grid-cols-[0.9fr_1.1fr] md:items-center">
-          <motion.div {...fadeUp}>
-            <SectionLabel dark>02 / revelación material</SectionLabel>
-            <h2 className="font-serif text-[18vw] leading-[0.86] text-bone md:text-[8vw]">Materia arquitectónica reimaginada</h2>
-            <div className="mt-12 grid gap-4 text-sm uppercase tracking-label text-white/48 sm:grid-cols-3">
-              <span>1.25 x 2.50 m</span>
-              <span>10-25 mm</span>
-              <span>Polímero recuperado de ingeniería de precisión</span>
-            </div>
+      <EditorialSection className="grid items-center bg-[#080807]">
+        <div className="mx-auto w-full max-w-7xl">
+          <motion.div {...reveal()} className="max-w-4xl">
+            <SectionKicker>04 / Diferencia</SectionKicker>
+            <h2 className="text-[13vw] font-semibold leading-[0.84] md:text-[7vw]">Diseñado más allá de lo convencional</h2>
           </motion.div>
-          <motion.div initial={{ opacity: 0, rotateX: 18, rotateZ: -9, y: 80 }} whileInView={{ opacity: 1, rotateX: 0, rotateZ: -5, y: 0 }} viewport={{ once: true, margin: '-20%' }} transition={{ duration: 1.2, ease: smoothEase }} className="perspective-1000">
-            <MaterialPlane finish={finishes[0]} className="mx-auto aspect-[1/2] w-[68vw] max-w-[430px] md:w-[36vw]" />
-            <div className="mx-auto mt-7 flex max-w-[430px] justify-between text-[0.65rem] uppercase tracking-label text-white/35">
-              <span>panel técnico</span><span>consistencia estructural</span>
-            </div>
-          </motion.div>
-        </div>
-      </section>
-
-      <section className="grid min-h-screen items-center bg-white px-5 py-24 text-black md:px-10">
-        <div className="mx-auto max-w-7xl">
-          <motion.div {...fadeUp} className="mb-16 max-w-3xl">
-            <SectionLabel>03 / distinto por diseño</SectionLabel>
-            <h2 className="text-6xl font-semibold tracking-cinematic md:text-8xl">La ruptura con las superficies heredadas.</h2>
-          </motion.div>
-          <div className="grid gap-px overflow-hidden rounded-[2rem] bg-black/12 md:grid-cols-2">
-            <motion.div {...fadeUp} className="bg-[#efede7] p-8 md:p-12">
-              <p className="mb-10 text-xs uppercase tracking-label text-black/35">Superficies tradicionales</p>
-              {['convenciones rígidas', 'acabados predecibles', 'expresión limitada de fabricación'].map((item) => (
-                <div key={item} className="border-t border-black/10 py-7 text-3xl text-black/42 md:text-5xl">{item}</div>
+          <div className="mt-20 grid gap-px bg-white/12 md:grid-cols-2">
+            <motion.div {...reveal(0.1)} className="bg-[#10100f] p-7 md:p-12">
+              <p className="mb-12 text-[0.62rem] uppercase tracking-[0.34em] text-white/34">Superficies tradicionales</p>
+              {['Limitaciones rígidas', 'Acabados previsibles', 'Lenguaje visual repetido', 'Expresión limitada'].map((item) => (
+                <p key={item} className="border-t border-white/10 py-7 font-serif text-4xl text-white/38 md:text-6xl">{item}</p>
               ))}
             </motion.div>
-            <motion.div {...fadeUp} transition={{ ...fadeUp.transition, delay: 0.16 }} className="bg-black p-8 text-white md:p-12">
-              <p className="mb-10 text-xs uppercase tracking-label text-white/35">ECHO</p>
-              {['versatilidad escultórica', 'precisión mecanizable', 'inteligencia termoformable', 'permanencia circular'].map((item) => (
-                <div key={item} className="border-t border-white/12 py-7 font-serif text-3xl text-bone md:text-5xl">{item}</div>
+            <motion.div {...reveal(0.2)} className="bg-bone p-7 text-black md:p-12">
+              <p className="mb-12 text-[0.62rem] uppercase tracking-[0.34em] text-black/36">ECHO</p>
+              {['Versatilidad escultórica', 'Precisión mecanizable', 'Libertad formal', 'Inteligencia material'].map((item) => (
+                <p key={item} className="border-t border-black/12 py-7 font-serif text-4xl md:text-6xl">{item}</p>
               ))}
             </motion.div>
           </div>
+          <motion.p {...reveal(0.18)} className="mt-16 text-center font-serif text-5xl text-bone md:text-7xl">
+            El diseño comienza donde termina la convención.
+          </motion.p>
         </div>
-      </section>
+      </EditorialSection>
 
-      <section className="relative grid min-h-screen items-center overflow-hidden bg-[#11100e] px-5 py-24 md:px-10">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_46%,rgba(231,223,208,0.16),transparent_28%),linear-gradient(90deg,rgba(0,0,0,0.65),transparent)]" />
-        <motion.div initial={{ scale: 1.2, opacity: 0 }} whileInView={{ scale: 1, opacity: 1 }} viewport={{ once: true, margin: '-20%' }} transition={{ duration: 1.4, ease: smoothEase }} className="absolute right-[-16vw] top-1/2 h-[82vh] w-[82vh] -translate-y-1/2 rounded-full bg-gradient-to-br from-stone-100/20 via-stone-500/20 to-black material-noise blur-[0.2px]" />
-        <div className="relative mx-auto max-w-7xl">
-          <motion.div {...fadeUp} className="max-w-4xl">
-            <SectionLabel dark>04 / experiencia táctil</SectionLabel>
-            <h2 className="font-serif text-[18vw] leading-[0.84] text-bone md:text-[9vw]">Materia con memoria.<br />Forma con intención.</h2>
-            <p className="mt-10 max-w-xl text-xl leading-8 text-white/56">
-              Los cantos sostienen el detalle. Las superficies recogen la luz. Cada panel conserva una huella compuesta de su origen recuperado sin convertirse en nostalgia.
-            </p>
-          </motion.div>
-        </div>
-      </section>
-
-      <section id="worlds" className="min-h-screen bg-bone px-5 py-24 text-black md:px-10">
+      <EditorialSection className="bg-black">
         <div className="mx-auto max-w-7xl">
-          <motion.div {...fadeUp} className="mb-12 flex flex-col justify-between gap-10 md:flex-row md:items-end">
+          <motion.div {...reveal()} className="mb-16 max-w-3xl">
+            <SectionKicker>05 / Experiencia sensorial</SectionKicker>
+            <h2 className="font-serif text-[16vw] leading-[0.86] text-bone md:text-[8vw]">Materia con memoria.<br />Forma con intención.</h2>
+            <div className="mt-10 space-y-4 text-xl leading-8 text-white/58">
+              <p>La luz responde distinto.</p>
+              <p>La textura permanece.</p>
+              <p>Cada borde cuenta una historia espacial.</p>
+            </div>
+          </motion.div>
+          <SensoryTriptych />
+        </div>
+      </EditorialSection>
+
+      <EditorialSection id="universos" className="bg-[#f1eee6] text-black">
+        <div className="mx-auto max-w-7xl">
+          <motion.div {...reveal()} className="mb-14 flex flex-col justify-between gap-10 md:flex-row md:items-end">
             <div>
-              <SectionLabel>05 / mundos de aplicación</SectionLabel>
-              <h2 className="max-w-4xl text-6xl font-semibold tracking-cinematic md:text-8xl">Sistemas espaciales, no productos puestos en escena.</h2>
+              <SectionKicker dark={false}>06 / Universos de aplicación</SectionKicker>
+              <h2 className="max-w-5xl text-[12vw] font-semibold leading-[0.84] md:text-[6.6vw]">Arquitectura, superficie, presencia.</h2>
             </div>
-            <p className="max-w-sm text-sm leading-7 text-black/50">Diseñado para los espacios donde convergen tacto, marca y permanencia arquitectónica.</p>
           </motion.div>
-          <div className="grid gap-4 lg:grid-cols-5">
+          <div className="grid gap-3 lg:grid-cols-5">
             {applications.map(([title, text], index) => (
-              <motion.article key={title} {...fadeUp} transition={{ ...fadeUp.transition, delay: index * 0.06 }} className="group relative min-h-[420px] overflow-hidden rounded-[1.6rem] bg-black p-6 text-white">
-                <div className={`absolute inset-0 bg-gradient-to-br ${finishes[index % finishes.length].gradient} opacity-70 transition duration-700 group-hover:scale-110 group-hover:opacity-95 material-noise`} />
-                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-transparent" />
-                <div className="relative flex h-full flex-col justify-end">
-                  <p className="mb-4 text-[0.65rem] uppercase tracking-label text-white/45">0{index + 1}</p>
-                  <h3 className="font-serif text-5xl">{title}</h3>
-                  <p className="mt-5 translate-y-4 text-sm leading-6 text-white/0 transition duration-500 group-hover:translate-y-0 group-hover:text-white/70">{text}</p>
-                </div>
-              </motion.article>
+              <ApplicationCard key={title} title={title} text={text} index={index} />
             ))}
           </div>
         </div>
-      </section>
+      </EditorialSection>
 
-      <section className="grid min-h-screen items-center bg-[#070707] px-5 py-24 md:px-10">
-        <div className="mx-auto max-w-7xl">
-          <motion.div {...fadeUp} className="mb-16 max-w-3xl">
-            <SectionLabel dark>06 / sistema de desempeño</SectionLabel>
-            <h2 className="text-6xl font-semibold tracking-cinematic md:text-8xl">El desempeño desaparece dentro de la posibilidad.</h2>
-          </motion.div>
-          <div className="grid gap-px overflow-hidden rounded-[2rem] bg-white/10 md:grid-cols-3">
-            {performance.map(([title, text, Icon], index) => (
-              <motion.div key={title as string} {...fadeUp} transition={{ ...fadeUp.transition, delay: Number(index) * 0.04 }} className="bg-[#10100f] p-8 md:p-10">
-                <Icon className="mb-12 h-6 w-6 text-white/55" />
-                <h3 className="text-2xl text-white">{title as string}</h3>
-                <p className="mt-3 text-sm leading-6 text-white/45">{text as string}</p>
-              </motion.div>
-            ))}
+      <EditorialSection className="grid items-center bg-[#050505]">
+        <div className="mx-auto grid w-full max-w-7xl gap-16 md:grid-cols-[0.85fr_1.15fr] md:items-center">
+          <div>
+            <motion.div {...reveal()}>
+              <SectionKicker>07 / Rendimiento</SectionKicker>
+              <h2 className="text-[13vw] font-semibold leading-[0.84] md:text-[6.8vw]">Belleza respaldada por desempeño</h2>
+            </motion.div>
+            <div className="mt-14 grid grid-cols-2 gap-px bg-white/10 md:grid-cols-3">
+              {performance.map(([item, Icon], index) => (
+                <motion.div key={item} {...reveal(index * 0.04)} className="group bg-[#10100f] p-6 transition hover:bg-bone hover:text-black md:p-8">
+                  <Icon className="mb-12 h-5 w-5 text-current opacity-55 transition group-hover:rotate-6" />
+                  <p className="min-h-14 text-xl leading-tight md:text-2xl">{item}</p>
+                </motion.div>
+              ))}
+            </div>
           </div>
+          <TechnicalExplode />
         </div>
-      </section>
+      </EditorialSection>
 
-      <section id="library" className="grid min-h-screen items-center bg-white px-5 py-24 text-black md:px-10">
-        <div className="mx-auto grid max-w-7xl gap-14 md:grid-cols-[0.95fr_1.05fr] md:items-center">
-          <motion.div {...fadeUp}>
-            <SectionLabel>07 / biblioteca material</SectionLabel>
-            <h2 className="text-6xl font-semibold tracking-cinematic md:text-8xl">Elige un lenguaje de superficie.</h2>
-            <p className="mt-8 max-w-md text-lg leading-8 text-black/55">Un sistema curado de acabados para diseñadores que necesitan atmósfera material antes de especificar.</p>
-            <div className="mt-12 grid gap-3">
+      <EditorialSection id="biblioteca" className="grid items-center bg-bone text-black">
+        <div className="mx-auto grid w-full max-w-7xl gap-16 md:grid-cols-[0.82fr_1.18fr] md:items-center">
+          <motion.div {...reveal()}>
+            <SectionKicker dark={false}>08 / Biblioteca material</SectionKicker>
+            <h2 className="text-[15vw] font-semibold leading-[0.82] md:text-[7.6vw]">Curar lo inesperado</h2>
+            <p className="mt-8 max-w-md text-xl leading-8 text-black/58">Una paleta creada para la individualidad arquitectónica.</p>
+            <div className="mt-12 grid gap-px bg-black/12">
               {finishes.map((finish) => (
-                <button key={finish.name} onClick={() => setActiveFinish(finish)} className={`flex items-center justify-between rounded-full border px-4 py-3 text-left transition ${activeFinish.name === finish.name ? 'border-black bg-black text-white' : 'border-black/10 hover:border-black/40'}`}>
-                  <span className="flex items-center gap-4">
-                    <span className={`h-9 w-9 rounded-full bg-gradient-to-br ${finish.gradient} material-noise`} />
-                    <span>
-                      <span className="block text-sm font-medium">{finish.name}</span>
-                      <span className={`block text-xs ${activeFinish.name === finish.name ? 'text-white/55' : 'text-black/45'}`}>{finish.descriptor}</span>
-                    </span>
+                <button
+                  key={finish.name}
+                  onClick={() => setActiveFinish(finish)}
+                  className={`group grid grid-cols-[2.8rem_1fr_auto] items-center gap-4 px-4 py-4 text-left transition ${activeFinish.name === finish.name ? 'bg-black text-white' : 'bg-bone hover:bg-white'}`}
+                >
+                  <span className={`h-10 w-10 rounded-[4px] bg-gradient-to-br ${finish.gradient} material-render`} />
+                  <span>
+                    <span className="block text-lg">{finish.name}</span>
+                    <span className={`block text-xs uppercase tracking-[0.22em] ${activeFinish.name === finish.name ? 'text-white/42' : 'text-black/42'}`}>{finish.tone}</span>
                   </span>
-                  <ArrowRight className="h-4 w-4" />
+                  <ArrowRight className="h-4 w-4 opacity-45 transition group-hover:translate-x-1" />
                 </button>
               ))}
             </div>
           </motion.div>
-          <motion.div layout className="relative">
-            <div className="absolute -inset-10 rounded-full blur-3xl" style={{ background: activeFinish.accent, opacity: 0.22 }} />
-            <MaterialPlane finish={activeFinish} className="relative mx-auto aspect-[1/1.62] w-[72vw] max-w-[520px]" />
+          <motion.div layout className="relative min-h-[78vh]">
+            <div className="absolute inset-0 rounded-full blur-3xl" style={{ background: activeFinish.accent, opacity: 0.18 }} />
+            <FloatingPanel finish={activeFinish} compact />
           </motion.div>
         </div>
-      </section>
+      </EditorialSection>
 
-      <section id="sample" className="relative min-h-screen overflow-hidden bg-[#050505] px-5 py-24 md:px-10">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_72%_20%,rgba(255,255,255,0.12),transparent_25%),radial-gradient(circle_at_15%_88%,rgba(214,211,203,0.12),transparent_26%)]" />
-        <div className="relative mx-auto grid max-w-7xl gap-16 md:grid-cols-[1fr_0.9fr] md:items-center">
-          <motion.div {...fadeUp}>
-            <SectionLabel dark>08 / contacto</SectionLabel>
-            <h2 className="font-serif text-[18vw] leading-[0.84] text-bone md:text-[8.6vw]">Solicita la experiencia de muestras</h2>
-            <p className="mt-10 max-w-xl text-2xl leading-tight text-white/58 md:text-4xl">
-              Siente el material.<br />Explora la categoría.<br />Diseña más allá de la convención.
+      <EditorialSection className="grid items-center bg-black">
+        <img src="/images/echo-panel-real.jpg" alt="" className="absolute inset-0 h-full w-full object-cover opacity-32 [object-position:52%_48%]" />
+        <div className="absolute inset-0 bg-[linear-gradient(90deg,#000_0%,rgba(0,0,0,0.78)_46%,rgba(0,0,0,0.28)_100%),linear-gradient(180deg,#000_0%,transparent_34%,#000_100%)]" />
+        <motion.div {...reveal()} className="relative mx-auto w-full max-w-7xl">
+          <SectionKicker>09 / Origen</SectionKicker>
+          <h2 className="max-w-5xl font-serif text-[15vw] leading-[0.86] text-bone md:text-[7.8vw]">
+            Diseñado en Colombia.<br />Pensado para cualquier lugar.
+          </h2>
+          <div className="mt-12 max-w-xl space-y-5 text-xl leading-8 text-white/62">
+            <p>ECHO transforma materiales recuperados en permanencia arquitectónica.</p>
+            <p>Una visión familiar convertida en innovación espacial.</p>
+          </div>
+        </motion.div>
+      </EditorialSection>
+
+      <EditorialSection id="contacto" className="bg-[#030303]">
+        <div className="mx-auto grid min-h-[82vh] w-full max-w-7xl gap-16 md:grid-cols-[1fr_0.85fr] md:items-center">
+          <motion.div {...reveal()}>
+            <SectionKicker>10 / Conversión</SectionKicker>
+            <h2 className="font-serif text-[16vw] leading-[0.82] text-bone md:text-[8.2vw]">Solicita la experiencia material</h2>
+            <p className="mt-12 max-w-xl text-3xl leading-tight text-white/58 md:text-5xl">
+              Descubre la superficie.<br />Entiende la categoría.<br />Diseña sin repetir.
             </p>
           </motion.div>
-          <motion.div {...fadeUp} transition={{ ...fadeUp.transition, delay: 0.12 }}>
+          <motion.div {...reveal(0.16)}>
             <ContactForm />
           </motion.div>
         </div>
-        <footer className="relative mx-auto mt-24 flex max-w-7xl flex-col justify-between gap-4 border-t border-white/10 pt-8 text-[0.65rem] uppercase tracking-label text-white/35 md:flex-row">
-          <span>© {currentYear} ECHO</span>
-          <span>Fabricado en Colombia / empresa familiar de materiales</span>
+        <footer className="relative mx-auto mt-20 flex max-w-7xl flex-col justify-between gap-4 border-t border-white/10 pt-8 text-[0.62rem] uppercase tracking-[0.32em] text-white/30 md:flex-row">
+          <span>(c) {year} ECHO</span>
+          <span>Materia arquitectónica recuperada / Colombia</span>
         </footer>
-      </section>
+      </EditorialSection>
     </main>
   );
 }

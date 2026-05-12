@@ -15,7 +15,7 @@ const config: Config = {
         smoke: '#73706a',
       },
       letterSpacing: {
-        cinematic: '-0.075em',
+        cinematic: '0',
         label: '0.22em',
       },
       boxShadow: {

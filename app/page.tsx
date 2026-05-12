@@ -25,28 +25,28 @@ type Finish = {
 const finishes: Finish[] = [
   {
     name: 'Nevada Gris',
-    descriptor: 'mineral grey with quiet graphite movement',
+    descriptor: 'gris mineral con movimiento grafito sutil',
     gradient: 'from-[#d6d3cb] via-[#9d9a93] to-[#555452]',
     accent: '#d6d3cb',
     flecks: 'rgba(255,255,255,0.42)',
   },
   {
     name: 'Fiesta',
-    descriptor: 'chromatic fragments suspended in deep architectural black',
+    descriptor: 'fragmentos cromáticos suspendidos en negro arquitectónico',
     gradient: 'from-[#1d1b1b] via-[#38312e] to-[#d36d50]',
     accent: '#d36d50',
     flecks: 'rgba(248,183,91,0.55)',
   },
   {
-    name: 'Obsidian Veil',
-    descriptor: 'soft black with a satin, monolithic presence',
+    name: 'Velo Obsidiana',
+    descriptor: 'negro suave con presencia satinada y monolítica',
     gradient: 'from-[#050505] via-[#191919] to-[#3a3936]',
     accent: '#222222',
     flecks: 'rgba(255,255,255,0.18)',
   },
   {
     name: 'Caliza',
-    descriptor: 'warm pale aggregate for galleries and hospitality spaces',
+    descriptor: 'agregado claro y cálido para galerías y hospitalidad',
     gradient: 'from-[#f2eee4] via-[#d9d0c1] to-[#9e9484]',
     accent: '#e7dfd0',
     flecks: 'rgba(77,68,58,0.22)',
@@ -54,20 +54,20 @@ const finishes: Finish[] = [
 ];
 
 const applications = [
-  ['Retail', 'branded surfaces that turn movement into memory'],
-  ['Hospitality', 'tactile calm for bars, suites, lobbies, and thresholds'],
-  ['Workspace', 'lighter systems for partitions, desks, and spatial identity'],
-  ['Furniture', 'formed, routed, and detailed like a new species of craft'],
-  ['Exhibition', 'fast-build environments with enduring material presence'],
+  ['Comercio', 'superficies de marca que convierten el movimiento en memoria'],
+  ['Hospitalidad', 'calma táctil para barras, suites, lobbies y umbrales'],
+  ['Oficinas', 'sistemas livianos para divisiones, escritorios e identidad espacial'],
+  ['Mobiliario', 'formado, ruteado y detallado como una nueva especie de oficio'],
+  ['Exhibición', 'entornos de montaje rápido con presencia material duradera'],
 ];
 
 const performance: Array<[string, string, ComponentType<{ className?: string }>]> = [
-  ['Lightweight', 'less mass, more freedom', Layers3],
-  ['Durable', 'built for daily contact', Shield],
-  ['Thermoformable', 'heat becomes geometry', Move3D],
-  ['Moisture Resistant', 'stable in demanding interiors', Waves],
-  ['Machinable', 'cuts, routes, and edges with precision', Hammer],
-  ['Circular Composition', 'reclaimed polymers, engineered forward', Recycle],
+  ['Liviano', 'menos masa, más libertad', Layers3],
+  ['Durable', 'hecho para el contacto diario', Shield],
+  ['Termoformable', 'el calor se convierte en geometría', Move3D],
+  ['Resistente a la humedad', 'estable en interiores exigentes', Waves],
+  ['Mecanizable', 'corta, rutea y perfila con precisión', Hammer],
+  ['Composición circular', 'polímeros recuperados, ingeniería hacia adelante', Recycle],
 ];
 
 const smoothEase = [0.22, 1, 0.36, 1] as const;
@@ -137,30 +137,30 @@ function ContactForm() {
         className="absolute inset-0 z-10 grid place-items-center rounded-[2rem] bg-[#050505]/95 p-8 text-center backdrop-blur-xl"
       >
         <CircleDashed className="mb-8 h-10 w-10 animate-spin text-white/50 [animation-duration:8s]" />
-        <p className="font-serif text-4xl text-white md:text-6xl">Sample experience initiated.</p>
+        <p className="font-serif text-4xl text-white md:text-6xl">Experiencia de muestra iniciada.</p>
         <p className="mt-6 max-w-md text-sm leading-7 text-white/55">
-          ECHO will respond with finish guidance, fabrication notes, and the next available material kit window.
+          ECHO responderá con guía de acabados, notas de fabricación y la próxima ventana disponible para el kit de materiales.
         </p>
       </motion.div>
       <form onSubmit={onSubmit} className="grid gap-4">
-        {['Name', 'Studio / Company', 'Email', 'Project Type', 'Project Stage'].map((field) => (
+        {['Nombre', 'Estudio / Empresa', 'Correo', 'Tipo de proyecto', 'Etapa del proyecto'].map((field) => (
           <label key={field} className="group block">
             <span className="mb-2 block text-[0.65rem] uppercase tracking-label text-white/38">{field}</span>
             <input
               required
-              type={field === 'Email' ? 'email' : 'text'}
+              type={field === 'Correo' ? 'email' : 'text'}
               className="w-full border-b border-white/16 bg-transparent px-0 py-4 text-base text-white outline-none transition placeholder:text-white/20 focus:border-white/70"
-              placeholder={field === 'Project Stage' ? 'Concept / DD / Construction / Procurement' : field}
+              placeholder={field === 'Etapa del proyecto' ? 'Concepto / desarrollo / obra / compra' : field}
             />
           </label>
         ))}
         <div className="mt-8 flex flex-col gap-3 sm:flex-row">
           <button className="group inline-flex items-center justify-center rounded-full bg-white px-7 py-4 text-sm font-medium text-black transition hover:bg-bone">
-            Request Sample Kit
+            Solicitar kit de muestras
             <ArrowRight className="ml-3 h-4 w-4 transition group-hover:translate-x-1" />
           </button>
           <button type="button" className="rounded-full border border-white/18 px-7 py-4 text-sm text-white/80 transition hover:border-white/45 hover:text-white">
-            Book Design Consultation
+            Agendar asesoría de diseño
           </button>
         </div>
       </form>
@@ -177,10 +177,10 @@ export default function Home() {
       <nav className="fixed left-0 right-0 top-0 z-50 flex items-center justify-between px-5 py-5 mix-blend-difference md:px-10">
         <a href="#hero" className="text-sm font-semibold tracking-[0.5em] text-white">ECHO</a>
         <div className="hidden items-center gap-8 text-[0.65rem] uppercase tracking-label text-white/70 md:flex">
-          <a href="#matter">Matter</a>
-          <a href="#worlds">Worlds</a>
-          <a href="#library">Library</a>
-          <a href="#sample">Sample</a>
+          <a href="#matter">Materia</a>
+          <a href="#worlds">Usos</a>
+          <a href="#library">Biblioteca</a>
+          <a href="#sample">Muestra</a>
         </div>
       </nav>
 
@@ -188,13 +188,13 @@ export default function Home() {
         <HeroMacro />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,rgba(0,0,0,0.35)_42%,#000_100%)]" />
         <motion.div {...fadeUp} className="relative z-10 max-w-6xl">
-          <p className="mb-8 text-xs uppercase tracking-label text-white/45">Colombia / engineered architectural surface</p>
+          <p className="mb-8 text-xs uppercase tracking-label text-white/45">Colombia / superficie arquitectónica de ingeniería</p>
           <h1 className="text-[17vw] font-semibold uppercase leading-[0.76] tracking-cinematic md:text-[9.8vw]">
-            Not wood.<br />Not stone.<br />Not what came before.
+            No es madera.<br />No es piedra.<br />No es lo de antes.
           </h1>
-          <p className="mx-auto mt-9 max-w-xl text-lg text-white/68 md:text-2xl">A new category of architectural surface.</p>
+          <p className="mx-auto mt-9 max-w-xl text-lg text-white/68 md:text-2xl">Una nueva categoría de superficie arquitectónica.</p>
           <a href="#disruption" className="mt-12 inline-flex items-center rounded-full border border-white/22 px-7 py-4 text-sm text-white/88 transition hover:border-white hover:bg-white hover:text-black">
-            Explore the Material <ArrowRight className="ml-3 h-4 w-4" />
+            Explorar el material <ArrowRight className="ml-3 h-4 w-4" />
           </a>
         </motion.div>
         <div className="absolute bottom-8 left-1/2 h-16 w-px -translate-x-1/2 overflow-hidden bg-white/12">
@@ -205,14 +205,14 @@ export default function Home() {
       <section id="disruption" className="relative grid min-h-screen items-center bg-bone px-5 py-24 text-black md:px-10">
         <div className="mx-auto grid max-w-7xl gap-16 md:grid-cols-[1.15fr_0.85fr] md:items-end">
           <motion.div {...fadeUp}>
-            <SectionLabel>01 / category disruption</SectionLabel>
+            <SectionLabel>01 / ruptura de categoría</SectionLabel>
             <h2 className="max-w-5xl text-[15vw] font-semibold leading-[0.82] tracking-cinematic md:text-[8.3vw]">
-              Architecture keeps repeating itself.
+              La arquitectura sigue repitiéndose.
             </h2>
           </motion.div>
           <motion.div {...fadeUp} transition={{ ...fadeUp.transition, delay: 0.15 }} className="pb-3">
             <p className="max-w-lg text-2xl leading-tight text-black/62 md:text-4xl">
-              Materials haven&apos;t evolved at the speed of design ambition.
+              Los materiales no han evolucionado al ritmo de la ambición del diseño.
             </p>
             <div className="mt-12 h-1 w-full overflow-hidden bg-black/10">
               <motion.div whileInView={{ x: ['-100%', '0%'] }} viewport={{ once: true }} transition={{ duration: 1.4, ease: smoothEase }} className="h-full bg-black" />
@@ -225,18 +225,18 @@ export default function Home() {
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_30%,rgba(255,255,255,0.09),transparent_28%)]" />
         <div className="relative mx-auto grid max-w-7xl gap-14 md:grid-cols-[0.9fr_1.1fr] md:items-center">
           <motion.div {...fadeUp}>
-            <SectionLabel dark>02 / material reveal</SectionLabel>
-            <h2 className="font-serif text-[18vw] leading-[0.86] text-bone md:text-[8vw]">Architectural Matter, Reimagined</h2>
+            <SectionLabel dark>02 / revelación material</SectionLabel>
+            <h2 className="font-serif text-[18vw] leading-[0.86] text-bone md:text-[8vw]">Materia arquitectónica reimaginada</h2>
             <div className="mt-12 grid gap-4 text-sm uppercase tracking-label text-white/48 sm:grid-cols-3">
               <span>1.25 x 2.50 m</span>
               <span>10-25 mm</span>
-              <span>Precision-engineered reclaimed polymer</span>
+              <span>Polímero recuperado de ingeniería de precisión</span>
             </div>
           </motion.div>
           <motion.div initial={{ opacity: 0, rotateX: 18, rotateZ: -9, y: 80 }} whileInView={{ opacity: 1, rotateX: 0, rotateZ: -5, y: 0 }} viewport={{ once: true, margin: '-20%' }} transition={{ duration: 1.2, ease: smoothEase }} className="perspective-1000">
             <MaterialPlane finish={finishes[0]} className="mx-auto aspect-[1/2] w-[68vw] max-w-[430px] md:w-[36vw]" />
             <div className="mx-auto mt-7 flex max-w-[430px] justify-between text-[0.65rem] uppercase tracking-label text-white/35">
-              <span>technical panel</span><span>structural consistency</span>
+              <span>panel técnico</span><span>consistencia estructural</span>
             </div>
           </motion.div>
         </div>
@@ -245,19 +245,19 @@ export default function Home() {
       <section className="grid min-h-screen items-center bg-white px-5 py-24 text-black md:px-10">
         <div className="mx-auto max-w-7xl">
           <motion.div {...fadeUp} className="mb-16 max-w-3xl">
-            <SectionLabel>03 / different by design</SectionLabel>
-            <h2 className="text-6xl font-semibold tracking-cinematic md:text-8xl">The break from inherited surfaces.</h2>
+            <SectionLabel>03 / distinto por diseño</SectionLabel>
+            <h2 className="text-6xl font-semibold tracking-cinematic md:text-8xl">La ruptura con las superficies heredadas.</h2>
           </motion.div>
           <div className="grid gap-px overflow-hidden rounded-[2rem] bg-black/12 md:grid-cols-2">
             <motion.div {...fadeUp} className="bg-[#efede7] p-8 md:p-12">
-              <p className="mb-10 text-xs uppercase tracking-label text-black/35">Traditional surfaces</p>
-              {['rigid conventions', 'predictable finishes', 'limited fabrication expression'].map((item) => (
+              <p className="mb-10 text-xs uppercase tracking-label text-black/35">Superficies tradicionales</p>
+              {['convenciones rígidas', 'acabados predecibles', 'expresión limitada de fabricación'].map((item) => (
                 <div key={item} className="border-t border-black/10 py-7 text-3xl text-black/42 md:text-5xl">{item}</div>
               ))}
             </motion.div>
             <motion.div {...fadeUp} transition={{ ...fadeUp.transition, delay: 0.16 }} className="bg-black p-8 text-white md:p-12">
               <p className="mb-10 text-xs uppercase tracking-label text-white/35">ECHO</p>
-              {['sculptural versatility', 'machinable precision', 'thermoformable intelligence', 'circular permanence'].map((item) => (
+              {['versatilidad escultórica', 'precisión mecanizable', 'inteligencia termoformable', 'permanencia circular'].map((item) => (
                 <div key={item} className="border-t border-white/12 py-7 font-serif text-3xl text-bone md:text-5xl">{item}</div>
               ))}
             </motion.div>
@@ -270,10 +270,10 @@ export default function Home() {
         <motion.div initial={{ scale: 1.2, opacity: 0 }} whileInView={{ scale: 1, opacity: 1 }} viewport={{ once: true, margin: '-20%' }} transition={{ duration: 1.4, ease: smoothEase }} className="absolute right-[-16vw] top-1/2 h-[82vh] w-[82vh] -translate-y-1/2 rounded-full bg-gradient-to-br from-stone-100/20 via-stone-500/20 to-black material-noise blur-[0.2px]" />
         <div className="relative mx-auto max-w-7xl">
           <motion.div {...fadeUp} className="max-w-4xl">
-            <SectionLabel dark>04 / tactile experience</SectionLabel>
-            <h2 className="font-serif text-[18vw] leading-[0.84] text-bone md:text-[9vw]">Matter with memory.<br />Form with intention.</h2>
+            <SectionLabel dark>04 / experiencia táctil</SectionLabel>
+            <h2 className="font-serif text-[18vw] leading-[0.84] text-bone md:text-[9vw]">Materia con memoria.<br />Forma con intención.</h2>
             <p className="mt-10 max-w-xl text-xl leading-8 text-white/56">
-              Edges hold detail. Surfaces gather light. Each panel carries a composed trace of its reclaimed origin without becoming nostalgia.
+              Los cantos sostienen el detalle. Las superficies recogen la luz. Cada panel conserva una huella compuesta de su origen recuperado sin convertirse en nostalgia.
             </p>
           </motion.div>
         </div>
@@ -283,10 +283,10 @@ export default function Home() {
         <div className="mx-auto max-w-7xl">
           <motion.div {...fadeUp} className="mb-12 flex flex-col justify-between gap-10 md:flex-row md:items-end">
             <div>
-              <SectionLabel>05 / application worlds</SectionLabel>
-              <h2 className="max-w-4xl text-6xl font-semibold tracking-cinematic md:text-8xl">Spatial systems, not product placements.</h2>
+              <SectionLabel>05 / mundos de aplicación</SectionLabel>
+              <h2 className="max-w-4xl text-6xl font-semibold tracking-cinematic md:text-8xl">Sistemas espaciales, no productos puestos en escena.</h2>
             </div>
-            <p className="max-w-sm text-sm leading-7 text-black/50">Designed for the spaces where touch, brand, and architectural permanence converge.</p>
+            <p className="max-w-sm text-sm leading-7 text-black/50">Diseñado para los espacios donde convergen tacto, marca y permanencia arquitectónica.</p>
           </motion.div>
           <div className="grid gap-4 lg:grid-cols-5">
             {applications.map(([title, text], index) => (
@@ -307,8 +307,8 @@ export default function Home() {
       <section className="grid min-h-screen items-center bg-[#070707] px-5 py-24 md:px-10">
         <div className="mx-auto max-w-7xl">
           <motion.div {...fadeUp} className="mb-16 max-w-3xl">
-            <SectionLabel dark>06 / performance system</SectionLabel>
-            <h2 className="text-6xl font-semibold tracking-cinematic md:text-8xl">Performance disappears into possibility.</h2>
+            <SectionLabel dark>06 / sistema de desempeño</SectionLabel>
+            <h2 className="text-6xl font-semibold tracking-cinematic md:text-8xl">El desempeño desaparece dentro de la posibilidad.</h2>
           </motion.div>
           <div className="grid gap-px overflow-hidden rounded-[2rem] bg-white/10 md:grid-cols-3">
             {performance.map(([title, text, Icon], index) => (
@@ -325,9 +325,9 @@ export default function Home() {
       <section id="library" className="grid min-h-screen items-center bg-white px-5 py-24 text-black md:px-10">
         <div className="mx-auto grid max-w-7xl gap-14 md:grid-cols-[0.95fr_1.05fr] md:items-center">
           <motion.div {...fadeUp}>
-            <SectionLabel>07 / material library</SectionLabel>
-            <h2 className="text-6xl font-semibold tracking-cinematic md:text-8xl">Choose a surface language.</h2>
-            <p className="mt-8 max-w-md text-lg leading-8 text-black/55">A curated finish system for designers who need material atmosphere before specification.</p>
+            <SectionLabel>07 / biblioteca material</SectionLabel>
+            <h2 className="text-6xl font-semibold tracking-cinematic md:text-8xl">Elige un lenguaje de superficie.</h2>
+            <p className="mt-8 max-w-md text-lg leading-8 text-black/55">Un sistema curado de acabados para diseñadores que necesitan atmósfera material antes de especificar.</p>
             <div className="mt-12 grid gap-3">
               {finishes.map((finish) => (
                 <button key={finish.name} onClick={() => setActiveFinish(finish)} className={`flex items-center justify-between rounded-full border px-4 py-3 text-left transition ${activeFinish.name === finish.name ? 'border-black bg-black text-white' : 'border-black/10 hover:border-black/40'}`}>
@@ -354,10 +354,10 @@ export default function Home() {
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_72%_20%,rgba(255,255,255,0.12),transparent_25%),radial-gradient(circle_at_15%_88%,rgba(214,211,203,0.12),transparent_26%)]" />
         <div className="relative mx-auto grid max-w-7xl gap-16 md:grid-cols-[1fr_0.9fr] md:items-center">
           <motion.div {...fadeUp}>
-            <SectionLabel dark>08 / conversion</SectionLabel>
-            <h2 className="font-serif text-[18vw] leading-[0.84] text-bone md:text-[8.6vw]">Request the Sample Experience</h2>
+            <SectionLabel dark>08 / contacto</SectionLabel>
+            <h2 className="font-serif text-[18vw] leading-[0.84] text-bone md:text-[8.6vw]">Solicita la experiencia de muestras</h2>
             <p className="mt-10 max-w-xl text-2xl leading-tight text-white/58 md:text-4xl">
-              Feel the material.<br />Explore the category.<br />Design beyond convention.
+              Siente el material.<br />Explora la categoría.<br />Diseña más allá de la convención.
             </p>
           </motion.div>
           <motion.div {...fadeUp} transition={{ ...fadeUp.transition, delay: 0.12 }}>
@@ -366,7 +366,7 @@ export default function Home() {
         </div>
         <footer className="relative mx-auto mt-24 flex max-w-7xl flex-col justify-between gap-4 border-t border-white/10 pt-8 text-[0.65rem] uppercase tracking-label text-white/35 md:flex-row">
           <span>© {currentYear} ECHO</span>
-          <span>Manufactured in Colombia / family-driven materials company</span>
+          <span>Fabricado en Colombia / empresa familiar de materiales</span>
         </footer>
       </section>
     </main>

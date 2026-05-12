@@ -3,14 +3,14 @@ import type { ReactNode } from 'react';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'ECHO — Architectural Matter, Reimagined',
+  title: 'ECHO - Materia arquitectónica reimaginada',
   description:
-    'A precision-engineered architectural surface panel made from reclaimed polymers. A new category of architectural matter.',
+    'Un panel de superficie arquitectónica de alta precisión hecho con polímeros recuperados. Una nueva categoría de materia arquitectónica.',
 };
 
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
   return (
-    <html lang="en" className="scroll-smooth">
+    <html lang="es" className="scroll-smooth">
       <body>{children}</body>
     </html>
   );
